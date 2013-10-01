@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from google.appengine.ext import testbed
 from google.appengine.datastore import datastore_stub_util
+from google.appengine.ext import testbed
 
 import settings
 
