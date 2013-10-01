@@ -4,7 +4,7 @@ import unittest
 from google.appengine.datastore import datastore_stub_util
 from google.appengine.ext import testbed
 
-from utils import settings
+from gae_utils import settings
 
 
 HRD_CONSISTENCY = 1
