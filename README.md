@@ -1,4 +1,4 @@
 gaeutils
 =========
 
-Useful utilities for building on App Engine
+Useful utilities for working with Google App Engine.
