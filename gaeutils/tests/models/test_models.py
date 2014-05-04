@@ -9,7 +9,7 @@ from mock import Mock
 from gaeutils import models
 
 
-class Foo(ndb.Model):
+class Foo(ndb.Model, models.SerializableMixin):
     string = ndb.StringProperty()
     dt = ndb.DateTimeProperty()
     geopt = ndb.GeoPtProperty()
@@ -22,7 +22,7 @@ class TestToDict(unittest.TestCase):
     def test_none_value(self):
         """Verify None values are handled correctly."""
 
-        actual = models.to_dict(Foo())
+        actual = Foo().to_dict_()
 
         self.assertIsNone(actual['string'])
 
@@ -31,7 +31,7 @@ class TestToDict(unittest.TestCase):
 
         expected = 'foo'
 
-        actual = models.to_dict(Foo(string=expected))
+        actual = Foo(string=expected).to_dict()
 
         self.assertEqual(expected, actual['string'])
 
@@ -40,10 +40,9 @@ class TestToDict(unittest.TestCase):
 
         expected = datetime.datetime(2013, 12, 29)
 
-        actual = models.to_dict(Foo(dt=expected))
+        actual = Foo(dt=expected).to_dict_()
 
-        expected = time.mktime(
-            expected.timetuple()) * 1000 + expected.microsecond / 1000
+        expected = time.mktime(expected.utctimetuple())
         self.assertEqual(expected, actual['dt'])
 
     def test_geopt_value(self):
@@ -51,7 +50,7 @@ class TestToDict(unittest.TestCase):
 
         expected = ndb.GeoPt(45.1234, -93.4947)
 
-        actual = models.to_dict(Foo(geopt=expected))
+        actual = Foo(geopt=expected).to_dict_()
 
         self.assertEqual({'lat': expected.lat, 'lon': expected.lon},
                          actual['geopt'])
@@ -62,7 +61,7 @@ class TestToDict(unittest.TestCase):
 
         expected = 'abc'
 
-        actual = models.to_dict(Foo(blobkey=blobstore.BlobKey(expected)))
+        actual = Foo(blobkey=blobstore.BlobKey(expected)).to_dict_()
 
         self.assertEqual(expected, actual['blobkey'])
 
@@ -71,9 +70,11 @@ class TestToDict(unittest.TestCase):
 
         expected = 'abc'
         ndb_key = Mock(spec=ndb.Key)
-        ndb_key.urlsafe.return_value = expected
+        ndb_key.id.return_value = expected
 
-        actual = models.to_dict(Foo(ndbkey=ndb_key))
+        actual = Foo(ndbkey=ndb_key).to_dict_()
 
         self.assertEqual(expected, actual['ndbkey'])
+
+    # TODO: Add tests around includes/excludes.
 
