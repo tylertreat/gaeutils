@@ -1,10 +1,10 @@
 from setuptools import find_packages
 from setuptools import setup
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 setup(
-    name='gae-utils',
+    name='gaeutils',
     version=VERSION,
     packages=find_packages(),
     install_requires=[],
