@@ -2,3 +2,6 @@
 .idea
 .noseids
 .build
+*.egg-info
+dist
+.coverage
