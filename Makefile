@@ -4,14 +4,19 @@ PIP := pip
 
 BUILD_DIR := .build
 
+all: deps
+
 clean:
 	find . -name "*.py[co]" -delete
-	find $(BUILD_DIR) -name "*_deps.out" -delete
+
+distclean: clean
+	rm -rf $(BUILD_DIR)
+	rm -rf $(LIBS_DIR)
 
 deps: clean py_deploy_deps py_dev_deps
 
 integrations:
-	nosetests --logging-level=ERROR -a slow
+	nosetests --logging-level=ERROR -a slow --with-coverage --cover-package=gaeutils
 
 py_deploy_deps: $(BUILD_DIR)/py_deploy_deps.out
 
