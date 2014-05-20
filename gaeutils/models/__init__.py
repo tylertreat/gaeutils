@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import json
 import logging
@@ -13,7 +14,7 @@ BUILTIN_TYPES = (int, long, float, bool, dict, basestring, list)
 
 class SerializableMixin(object):
 
-    def to_dict_(self, includes=None, excludes=None):
+    def to_json_dict(self, includes=None, excludes=None):
         """Convert an ndb or db entity to a JSON-serializable dict."""
 
         output = {}
@@ -36,8 +37,10 @@ class SerializableMixin(object):
                 output[key] = str(value)
             elif isinstance(value, (db.Key, ndb.Key)):
                 output[key] = value.id()
+            elif isinstance(value, SerializableMixin):
+                output[key] = value.to_json_dict()
             elif isinstance(value, (db.Model, ndb.Model)):
-                output[key] = self.to_dict(value)
+                output[key] = value.to_dict()
             else:
                 raise ValueError('Cannot encode %s' % repr(prop))
 
@@ -63,9 +66,12 @@ class EntityEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, datetime.date):
-            return time.mktime(obj.utctimetuple())
+            return calendar.timegm(obj.utctimetuple())
 
-        elif isinstance(obj, ndb.Model):
+        elif isinstance(obj, SerializableMixin):
+            return obj.to_json_dict()
+
+        elif isinstance(obj, (db.Model, ndb.Model)):
             return obj.to_dict()
 
         else:

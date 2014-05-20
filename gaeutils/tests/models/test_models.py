@@ -17,12 +17,12 @@ class Foo(ndb.Model, models.SerializableMixin):
     ndbkey = ndb.KeyProperty()
 
 
-class TestToDict(unittest.TestCase):
+class TestToJsonDict(unittest.TestCase):
 
     def test_none_value(self):
         """Verify None values are handled correctly."""
 
-        actual = Foo().to_dict_()
+        actual = Foo().to_json_dict()
 
         self.assertIsNone(actual['string'])
 
@@ -40,7 +40,7 @@ class TestToDict(unittest.TestCase):
 
         expected = datetime.datetime(2013, 12, 29)
 
-        actual = Foo(dt=expected).to_dict_()
+        actual = Foo(dt=expected).to_json_dict()
 
         expected = time.mktime(expected.utctimetuple())
         self.assertEqual(expected, actual['dt'])
@@ -50,7 +50,7 @@ class TestToDict(unittest.TestCase):
 
         expected = ndb.GeoPt(45.1234, -93.4947)
 
-        actual = Foo(geopt=expected).to_dict_()
+        actual = Foo(geopt=expected).to_json_dict()
 
         self.assertEqual({'lat': expected.lat, 'lon': expected.lon},
                          actual['geopt'])
@@ -61,7 +61,7 @@ class TestToDict(unittest.TestCase):
 
         expected = 'abc'
 
-        actual = Foo(blobkey=blobstore.BlobKey(expected)).to_dict_()
+        actual = Foo(blobkey=blobstore.BlobKey(expected)).to_json_dict()
 
         self.assertEqual(expected, actual['blobkey'])
 
@@ -72,7 +72,7 @@ class TestToDict(unittest.TestCase):
         ndb_key = Mock(spec=ndb.Key)
         ndb_key.id.return_value = expected
 
-        actual = Foo(ndbkey=ndb_key).to_dict_()
+        actual = Foo(ndbkey=ndb_key).to_json_dict()
 
         self.assertEqual(expected, actual['ndbkey'])
 
